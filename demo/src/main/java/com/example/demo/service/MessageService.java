@@ -14,14 +14,26 @@ public class MessageService {
 	
 	public Iterable<Message> getAllMessages()
 	{
-		Message m1 = new Message(101,"Hello world","Abhimanyu");
-		mesrepo.save(m1);
+		/*
+		 * Message m1 = new Message(101,"Hello world","Abhimanyu"); mesrepo.save(m1);
+		 */
 		return mesrepo.findAll();
+	}
+	
+	public Message getMessage(int id)
+	{
+		return mesrepo.findById(id).orElse(null);
 	}
 	
 	public Iterable<Message> addMessage(Message msg)
 	{
 		mesrepo.save(msg);
+		return mesrepo.findAll();
+	}
+	
+	public Iterable<Message> deleteMessage(int id)
+	{
+		mesrepo.deleteById(id);
 		return mesrepo.findAll();
 	}
 }
