@@ -3,6 +3,7 @@ package com.employees.Employee.services;
 import com.employees.Employee.entities.Employee;
 import com.employees.Employee.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public class EmployeeService {
 
     @Autowired
     private EmployeeRepository emp_Repo;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     public List<Employee> getAllEmployees()
     {
@@ -37,6 +40,7 @@ public class EmployeeService {
                 .ifPresent(u -> {
                     throw new RuntimeException("This user is already taken");
                 });
+        emp.setPassword(encoder.encode(emp.getPassword()));
         emp_Repo.save(emp);
         return emp;
     }
