@@ -1,6 +1,9 @@
 package com.employees.Employee.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.processing.Exclude;
 import org.springframework.lang.NonNull;
 
 @Entity(name = "Employee")
@@ -14,6 +17,7 @@ public class Employee {
     @Column(nullable = false,unique = true)
     private String userName;
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     public Employee() {
