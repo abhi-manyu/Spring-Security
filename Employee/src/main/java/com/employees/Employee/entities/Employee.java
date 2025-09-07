@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.processing.Exclude;
 import org.springframework.lang.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity(name = "Employee")
 public class Employee {
     @Id
@@ -19,6 +22,11 @@ public class Employee {
     @Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "employee_roles", joinColumns = @JoinColumn(name = "emp_id"))
+    @Column(name = "role")
+    private List<String> roles=new ArrayList<>();
 
     public Employee() {
     }
@@ -80,5 +88,13 @@ public class Employee {
 
     public void setPassword(@NonNull String password) {
         this.password = password;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

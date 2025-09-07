@@ -1,0 +1,62 @@
+
+    // this is s new branch created from the mail branch to authenticate and authoeize the user based
+    // on the username and password stored in the Database.
+    // for that, simplely we need something or some mechanism to cross check the username and password
+    // entered by the user with the username and password stored in the database.
+    // that think or that mechanism is performed by the UserDetailsService interface.
+    // for that we need to implement UserDetailsService interface provided by Spring Security.
+    // which will take the username provided by the user and try to find the user from the database
+    // based on the username and then it returns the user details to the spring security.
+    // so for that we have created a class EmployeeDetailsServiceImpl which implements UserDetailsService
+    // interface and override the method loadUserByUsername which takes username as input and returns
+    // UserDetails object.
+    // so now we need to tell spring security to use our implementation of UserDetailsService
+    // for that we need to autowire our implementation class in this security configuration class.
+    // Spring boot takes that user and authenticate the user and if User is authenticated then
+    // it will authorize the user based on the roles assigned to the user by the request matchers.
+    //if User is not authenticated then it will throw 401 error.
+    // This Authentication and Authorization is done by the DaoAuthenticationProvider class
+    // provided by the spring security.
+    // DaoAuthenticationProvider class uses UserDetailsService to get the user details from the database
+    // and then it uses PasswordEncoder to compare the password entered by the user with the password
+    // stored in the database.
+    // So we need to provide PasswordEncoder bean in this class.
+    // For that we are using BCryptPasswordEncoder which is a strong hashing algorithm.
+    // So now spring security will use our implementation of UserDetailsService and PasswordEncoder
+    // to authenticate and authorize the user.
+    // Here DaoAuthentication is not explicitly defined because it is defined in the spring security
+    // auto configuration class.
+    // So we don't need to define it explicitly. If we require customizations like custom login page
+    // or custom logout page or multi step authentications then we need to define it explicitly.Or else
+    // mo need to define it explicitly, Spring boot will take care of it.
+    //Once the user is authenticated and authorized then user can access the resources based on
+    // the roles assigned to the user.
+    // Be informed the Request Matchers are evaluated in order, so place the most specific
+    // matchers at the top and the least specific at the bottom.
+    // Here the order of request matchers is important.
+
+    //One small catch is that, here it is authenticated and Uthorize based on the roles assigned to the user.
+    // Hence Suppose we want to send a get request
+    // localhost:8080/employees/1 and provided the some other username and password which is not having
+    // the same User role that will work.
+    //soppose user 1:
+    //{ "empId": 1, "empName": "Abhi", "userName": "Abhi", "password": "123", "roles": ["USER"] }
+    //user 2:
+    //{ "empId": 2, "empName": "Manyu", "userName": "manyu", "password": "345", "roles": ["USER"] }
+    //Now if we send the get request localhost:8080/employees/1 with username manyu and password 345
+    //that will work because the user manyu is having the role USER.
+
+    //here stepwise explanation.
+    // when we enter the credetials of the 2nd user while sending the get request for the 1st user
+    // spring will take the username of the 2nd user and will call the method loadUserByUsername
+    // of the EmployeeDetailsServiceImpl class and will try to find the user from the database
+    // based on the username of the 2nd user and will return the user details to the spring security.
+    // then spring security will compare the password entered by the user with the hashed password stored in
+    // the database using the PasswordEncoder bean provided in this class.
+    // if the password matches then the user is authenticated and then spring security will authorize
+    // the user based on the roles assigned to the user by the request matchers.
+    // Don't get confused this is going to comare password of 1st with with the 2nd user credentials entered
+    // the user. No this will only compare the entered password vs stored password of the given username.
+    // and then if mathes then authneticates the user. or else false, this is the default behaviour of the
+    // spring security.
+

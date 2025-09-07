@@ -18,6 +18,7 @@ public class EmployeeController {
     {
         return ResponseEntity.ok(emp_Serv.getAllEmployees());
     }
+
     @GetMapping("/{empId}")
     public ResponseEntity<?> getEmployeeById(@PathVariable Integer empId)
     {

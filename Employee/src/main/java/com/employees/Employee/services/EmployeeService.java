@@ -4,6 +4,7 @@ import com.employees.Employee.entities.Employee;
 import com.employees.Employee.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository emp_Repo;
     @Autowired
-    private BCryptPasswordEncoder encoder;
+    private PasswordEncoder encoder;
 
     public List<Employee> getAllEmployees()
     {
