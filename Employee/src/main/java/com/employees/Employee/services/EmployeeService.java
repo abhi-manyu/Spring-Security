@@ -3,6 +3,9 @@ package com.employees.Employee.services;
 import com.employees.Employee.entities.Employee;
 import com.employees.Employee.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +29,12 @@ public class EmployeeService {
     public Employee getEmployeeByEmpById(Integer empId)
     {
         return emp_Repo.findById(empId).map(emp ->{
-            return emp;
+           Authentication auth= SecurityContextHolder.getContext().getAuthentication();
+           String loggedInUsername = auth.getName();
+           boolean isAdmin = auth.getAuthorities().stream().anyMatch(a->a.equals("ROLE_ADMIN"));
+            if(isAdmin || loggedInUsername.equals(emp.getUserName()))
+                return emp;
+            else throw new AccessDeniedException("You are not Uthorised to view this Details");
         }).orElseThrow(()-> new RuntimeException("Employee with id "+empId+" not found"));
     }
 
