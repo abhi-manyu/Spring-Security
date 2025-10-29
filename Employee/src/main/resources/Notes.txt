@@ -60,3 +60,38 @@
     // and then if mathes then authneticates the user. or else false, this is the default behaviour of the
     // spring security.
 
+2.
+
+// here as we can see the resource all details like each and every properties, which is a big design flaws. hence we need to
+hide the details as required.
+
+This can be done as 4 ways as below.
+
+Approach	                             What It Does                                                    Main Problem
+---------------------------------- -------------------------------- --------------------------------------------------------------
+@JsonIgnore	                        Hides some entity fields from serialization	             Mixes serialization logic inside
+                                                                                             entity (bad separation of concerns)
+
+@JsonView	                        Shows/hides fields based on view classes	             Still couples API exposure with
+                                                                                             entity, becomes messy with multiple
+                                                                                             endpoints
+
+Projection	                        Selects limited columns at query level	                 Good for performance, but tied to
+                                                                                             JPA repository, not reusable for
+                                                                                             API design
+
+DTO (Data Transfer Object)	         Defines exactly what API should expose	                 Keeps entity pure, flexible,
+                                                                                             testable, scalable ✅
+
+amoung all the above, DTO approach is best, so to use the DTO(we can take help of MapStruct)
+
+1. add MapStruct dependency
+  - Here we need to add the dependency and additionally also we need to add the mapstruct processor as well in <config> &
+  </config>
+2 - then create one pakage  "DTOs" where our DTO classes or records will be there, here we have 2 one is for response and another
+    is for request
+3- Then create mapper Package under which we need to define our mapper interface where we can mention some abstract methods to
+    convert from normal entity to DTO and vice versa will be there.
+4 - once that is done, mark that class with @Mapper annotations, and keep special care while mapping the fields of entity class
+    and mapper class/ record fields.
+5- once this is done we can direct use the mapper for those abstract methods as in this example.

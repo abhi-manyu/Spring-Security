@@ -36,7 +36,7 @@ public class EmployeeSecurityConfig
                         // @PreAuthorize("hasAnyRole('ADMIN')") in controller or service class method.
                         //or we can use both of them together to enforce the double security.
                         .requestMatchers("/employees/*").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/employees/**").hasRole("ADMIN")
+                        .requestMatchers("/employees/**").hasAnyRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .httpBasic(withDefaults());
