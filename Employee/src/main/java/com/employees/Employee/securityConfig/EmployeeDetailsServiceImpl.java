@@ -13,18 +13,24 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class EmployeeDetailsServiceImpl implements UserDetailsService
-{
+public class EmployeeDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private EmployeeRepository empRepo;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Employee emp = Optional.ofNullable(empRepo.findByUserName(username))
-                .orElseThrow(() -> new UsernameNotFoundException("user name not found : "+username));
+                .orElseThrow(() -> new UsernameNotFoundException("user name not found : " + username));
         return User.withUsername(emp.getUserName())
                 .password(emp.getPassword())
                 .roles(emp.getRoles().toArray(new String[0]))
                 .build();
+    }
+
+    public boolean isOwner(Integer empId, String loggedInUser) {
+        return empRepo.findById(empId)
+                .map(emp -> emp.getUserName().equals(loggedInUser))
+                .orElse(false);
+
     }
 }

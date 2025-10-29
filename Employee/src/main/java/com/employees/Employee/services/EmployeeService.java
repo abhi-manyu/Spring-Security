@@ -4,6 +4,7 @@ import com.employees.Employee.entities.Employee;
 import com.employees.Employee.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,15 +27,11 @@ public class EmployeeService {
         return emp_Repo.findAll();
     }
 
+    @PreAuthorize("@employeeDetailsServiceImpl.isOwner(#empId, authentication.name) or hasRole('ADMIN')")
     public Employee getEmployeeByEmpById(Integer empId)
     {
         return emp_Repo.findById(empId).map(emp ->{
-           Authentication auth= SecurityContextHolder.getContext().getAuthentication();
-           String loggedInUsername = auth.getName();
-           boolean isAdmin = auth.getAuthorities().stream().anyMatch(a->a.equals("ROLE_ADMIN"));
-            if(isAdmin || loggedInUsername.equals(emp.getUserName()))
                 return emp;
-            else throw new AccessDeniedException("You are not Uthorised to view this Details");
         }).orElseThrow(()-> new RuntimeException("Employee with id "+empId+" not found"));
     }
 
@@ -52,6 +49,14 @@ public class EmployeeService {
         emp.setPassword(encoder.encode(emp.getPassword()));
         emp_Repo.save(emp);
         return emp;
+    }
+
+    public String deleteEmployee(int eId) {
+        emp_Repo.findById(eId).ifPresentOrElse(emp->
+                emp_Repo.deleteById(eId),
+                () -> {throw new RuntimeException(String.format("Emp with id : %s, not found",eId));});
+        return "Employee deleted successfully";
+
     }
 
 }
